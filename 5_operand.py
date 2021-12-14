@@ -13,7 +13,6 @@ for func in idautils.Functions():
     flags = idc.get_func_flags(func)
     if flags & idc.FUNC_THUNK or flags & idc.FUNC_LIB:
         continue
-
     dism_addrs = idautils.FuncItems(func)
     for curr_addr in dism_addrs:
         op = None
@@ -26,18 +25,8 @@ for func in idautils.Functions():
             op = 1
         if insn.Op2.type == idc.o_displ:
             op = 2
-        # make the memory reference to offset, maybe to mannaul set the base to a larger value be better
-        if insn.Op1.type == idc.o_imm:
-            if min_ea < insn.Op1.value < max_ea:
-                idc.op_plain_offset(curr_addr, 0, 0)
-                print("op_plain_offset here()", hex(curr_addr))
-        if insn.Op2.type == idc.o_imm:
-            if min_ea < insn.Op2.value < max_ea:
-                idc.op_plain_offset(curr_addr, 1, 0)
-                print("op_plain_offset here()", hex(curr_addr))
         if op == None:
             continue
-        
         # This is a quick way to determine if the register bp , ebp or rbp is present in the operand.
         if "bp" in idc.print_operand(curr_addr, 0) or \
             "bp" in idc.print_operand(curr_addr, 1):
